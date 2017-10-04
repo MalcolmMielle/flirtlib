@@ -158,3 +158,5 @@ IF(BUILD_GUI)
 ENDIF(BUILD_GUI)
 ADD_SUBDIRECTORY(applications)
 
+
+set( BUILD_GUI ${BUILD_GUI} PARENT_SCOPE ) #<-- set in the parent scope too

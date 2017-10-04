@@ -10,6 +10,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 add_subdirectory(src)
 
+# ---------------------------- Defining building options ------------------------------
 option(BUILD_DOC "Build the documentation " ON)
 
 #-- Add the doc target to generate the API documentation
@@ -26,6 +27,15 @@ FIND_PACKAGE(Doxygen)
     install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/html DESTINATION share/flirtlib/doc)
   endif()
 endif()
+
+# Set components that have been build and will be ready for later install. '
+# This way if the GUI is not build the CMAKE config can be updated accordinlgy
+set(COMPONENTS feature geometry sensors sensorstream utils)
+if(${BUILD_GUI})
+  list(APPEND COMPONENTS gui)
+endif()
+
+
 # Install the licenses and the README
 install(FILES ${PROJECT_SOURCE_DIR}/COPYING ${PROJECT_SOURCE_DIR}/COPYING.LESSER ${PROJECT_SOURCE_DIR}/README DESTINATION share/flirtlib)
 
@@ -35,3 +45,12 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION share/flirtlib PATTERN 
 # Install the cmake config
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" @ONLY)
 install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION share/flirtlib/cmake)
+
+# uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
